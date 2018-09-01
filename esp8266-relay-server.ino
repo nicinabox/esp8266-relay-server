@@ -36,18 +36,13 @@ void handleClose() {
   server.send(204);
 }
 
-void handleCycleClose() {
-  setState(1);
-  delay(100);
-  setState(0);
+void handleCycle() {
+  int originalState = state
+  int nextState = 1 - state
 
-  server.send(204);
-}
-
-void handleCycleOpen() {
-  setState(0);
+  setState(nextState);
   delay(100);
-  setState(1);
+  setState(originalState);
 
   server.send(204);
 }
@@ -60,8 +55,7 @@ void configureRoutes() {
   server.on("/", handleRoot);
   server.on("/open", handleOpen);
   server.on("/close", handleClose);
-  server.on("/cycle-open", handleCycleOpen);
-  server.on("/cycle-close", handleCycleClose);
+  server.on("/cycle", handleCycle);
   server.onNotFound(handleNotFound);
 }
 
