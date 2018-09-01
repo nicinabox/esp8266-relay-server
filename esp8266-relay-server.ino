@@ -58,17 +58,10 @@ void awaitWifiConnected() {
 void setupRelay() {
   Serial.begin(9600);
 
-  // Relay control pin.
   pinMode(ESP8266_GPIO4, OUTPUT);
-
-  // Input pin.
   pinMode(ESP8266_GPIO5, INPUT_PULLUP);
-
-  // ESP8266 module blue LED.
   pinMode(LED_PIN, OUTPUT);
-
-  // Set relay control pin low.
-  digitalWrite( ESP8266_GPIO4, 0 );
+  digitalWrite(ESP8266_GPIO4, state);
 }
 
 void setup() {
