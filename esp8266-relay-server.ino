@@ -11,8 +11,7 @@ const int PORT = 80;
 const char* ssid = "WIFI_SSID";
 const char* password = "WIFI_PASSWORD";
 
-// 0 - open
-// 1 - closed
+const String STATES[] = { "open", "closed" };
 volatile int state = 0;
 
 ESP8266WebServer server(PORT);
@@ -23,7 +22,7 @@ void setState(int nextState) {
 }
 
 void handleRoot() {
-  String payload = "{ \"state\": " + String(state) + " }";
+  String payload = "{ \"state\": " + STATES[state] + " }";
   server.send(200, "text/json", payload);
 }
 
@@ -37,10 +36,19 @@ void handleClose() {
   server.send(204);
 }
 
-void handleCycle() {
+void handleCycleClose() {
   setState(1);
   delay(100);
   setState(0);
+
+  server.send(204);
+}
+
+void handleCycleOpen() {
+  setState(0);
+  delay(100);
+  setState(1);
+
   server.send(204);
 }
 
@@ -52,7 +60,8 @@ void configureRoutes() {
   server.on("/", handleRoot);
   server.on("/open", handleOpen);
   server.on("/close", handleClose);
-  server.on("/cycle", handleCycle);
+  server.on("/cycle-open", handleCycleOpen);
+  server.on("/cycle-close", handleCycleClose);
   server.onNotFound(handleNotFound);
 }
 
