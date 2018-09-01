@@ -10,6 +10,9 @@
 const int PORT = 80;
 const char* ssid = "WIFI_SSID";
 const char* password = "WIFI_PASSWORD";
+
+// 0 - open
+// 1 - closed
 volatile int state = 0;
 
 ESP8266WebServer server(PORT);
@@ -25,12 +28,12 @@ void handleRoot() {
 }
 
 void handleOpen() {
-  setState(1);
+  setState(0);
   server.send(204);
 }
 
 void handleClose() {
-  setState(0);
+  setState(1);
   server.send(204);
 }
 
