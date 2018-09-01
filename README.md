@@ -1,6 +1,6 @@
 # esp8266-relay-server
 
-A simple server to accept HTTP requests to move the relay
+A simple server to accept HTTP requests to switch the relay
 
 ## Configure
 
