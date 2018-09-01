@@ -24,3 +24,7 @@ Status: 204
 ```
 Status: 204
 ```
+
+## License
+
+MIT (c) 2018 Nic Haynes
