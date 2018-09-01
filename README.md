@@ -19,8 +19,13 @@ Status: 200
 ```
 Status: 204
 ```
-`GET /close`
 
+`GET /close`
+```
+Status: 204
+```
+
+`GET /cycle`
 ```
 Status: 204
 ```
