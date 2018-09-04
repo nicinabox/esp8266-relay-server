@@ -27,11 +27,11 @@ int getStatus() {
 }
 
 bool isClosed() {
-  return getStatus() == HIGH;
+  return getStatus() == LOW;
 }
 
 bool isOpen() {
-  return getStatus() == LOW;
+  return getStatus() == HIGH;
 }
 
 void handleRoot() {
