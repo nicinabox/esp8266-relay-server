@@ -34,7 +34,7 @@ bool isOpen() {
   return getStatus() == HIGH;
 }
 
-void handleRoot() {
+void handleStatus() {
   server.send(200, "text/plain", String(getStatus()));
 }
 
@@ -65,7 +65,7 @@ void handleNotFound() {
 }
 
 void configureRoutes() {
-  server.on("/", handleRoot);
+  server.on("/", handleStatus);
   server.on("/open", handleOpen);
   server.on("/close", handleClose);
   server.on("/cycle", handleCycle);
