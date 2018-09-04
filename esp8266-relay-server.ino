@@ -82,7 +82,7 @@ void awaitWifiConnected() {
   }
 }
 
-void setupRelay() {
+void setupHardware() {
   Serial.begin(9600);
 
   pinMode(ESP8266_GPIO4, OUTPUT);
@@ -94,7 +94,7 @@ void setupRelay() {
 
 void setup() {
   awaitWifiConnected();
-  setupRelay();
+  setupHardware();
   configureRoutes();
 
   server.begin();
