@@ -7,11 +7,10 @@
 #define ESP8266_GPIO5   5  // Optocoupler input
 #define LED_PIN         ESP8266_GPIO2
 
-const int PORT = 80;
 const char* ssid = "WIFI_SSID";
 const char* password = "WIFI_PASSWORD";
 
-ESP8266WebServer server(PORT);
+ESP8266WebServer server(80);
 
 void setRelayState(int nextState) {
   digitalWrite(ESP8266_GPIO4, nextState);
@@ -99,7 +98,7 @@ void setup() {
   configureRoutes();
 
   server.begin();
-  Serial.println("Listening on http://" + String(WiFi.localIP()) + ":" + String(PORT));
+  Serial.println("Listening on http://" + String(WiFi.localIP()));
 }
 
 void loop() {
