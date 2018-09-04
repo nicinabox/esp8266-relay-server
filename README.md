@@ -4,8 +4,8 @@ A simple server to accept HTTP requests to control an automatic gate.
 
 ## Configure
 
-1. Set WIFI_SSID
-2. Set WIFI_PASSWORD
+1. Rename `secrets.example.h` to `secrets.h`
+2. Set your secrets
 
 ## API
 

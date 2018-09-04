@@ -1,14 +1,16 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
+#include "secrets.h"
+
 // Esp8266 pinouts
 #define ESP8266_GPIO2   2  // LED
 #define ESP8266_GPIO4   4  // Relay
 #define ESP8266_GPIO5   5  // Optocoupler input
 #define LED_PIN         ESP8266_GPIO2
 
-const char* ssid = "WIFI_SSID";
-const char* password = "WIFI_PASSWORD";
+const char* ssid = WIFI_SSID;
+const char* password = WIFI_PASSWORD;
 
 ESP8266WebServer server(80);
 
