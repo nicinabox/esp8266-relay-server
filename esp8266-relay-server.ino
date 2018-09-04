@@ -11,9 +11,6 @@ const int PORT = 80;
 const char* ssid = "WIFI_SSID";
 const char* password = "WIFI_PASSWORD";
 
-const String STATUSES[] = { "open", "closed" };
-volatile int initialRelayState = 0;
-
 ESP8266WebServer server(PORT);
 
 void setRelayState(int nextState) {
@@ -26,21 +23,20 @@ void cycleRelay() {
   setRelayState(0);
 }
 
-String getStatus() {
-  return STATUSES[digitalRead(ESP8266_GPIO5)];
+int getStatus() {
+  return digitalRead(ESP8266_GPIO5);
 }
 
 bool isClosed() {
-  return getStatus() == "closed";
+  return getStatus() == HIGH;
 }
 
 bool isOpen() {
-  return getStatus() == "open";
+  return getStatus() == LOW;
 }
 
 void handleRoot() {
-  String payload = "{ \"status\": " + getStatus() + " }";
-  server.send(200, "text/json", payload);
+  server.send(200, "text/plain", String(getStatus()));
 }
 
 void handleOpen() {
@@ -94,7 +90,7 @@ void setupRelay() {
   pinMode(ESP8266_GPIO5, INPUT_PULLUP);
   pinMode(LED_PIN, OUTPUT);
 
-  digitalWrite(ESP8266_GPIO4, initialRelayState);
+  digitalWrite(ESP8266_GPIO4, 0);
 }
 
 void setup() {
