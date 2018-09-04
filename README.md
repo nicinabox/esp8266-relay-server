@@ -1,6 +1,6 @@
 # esp8266-relay-server
 
-A simple server to accept HTTP requests to switch the relay
+A simple server to accept HTTP requests to control an automatic gate.
 
 ## Configure
 
@@ -10,25 +10,29 @@ A simple server to accept HTTP requests to switch the relay
 ## API
 
 `GET /`
-```
-Status: 200
-{ "status": "open" }
-```
+
+Return gate status. Body returns 0 or 1 for closed and open, respectively.
+
+    Status: 200
+    => 1
 
 `GET /open`
-```
-Status: 204
-```
+
+Open the gate. Noop if already open.
+
+    Status: 204
 
 `GET /close`
-```
-Status: 204
-```
+
+Close the gate. Noop if already closed.
+
+    Status: 204
 
 `GET /cycle`
-```
-Status: 204
-```
+
+Cycle the gate from the current position.
+
+    Status: 204
 
 ## License
 
