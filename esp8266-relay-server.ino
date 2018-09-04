@@ -22,20 +22,20 @@ void cycleRelay() {
   setRelayState(0);
 }
 
-int getStatus() {
+int getState() {
   return digitalRead(ESP8266_GPIO5);
 }
 
 bool isClosed() {
-  return getStatus() == LOW;
+  return getState() == LOW;
 }
 
 bool isOpen() {
-  return getStatus() == HIGH;
+  return getState() == HIGH;
 }
 
 void handleStatus() {
-  server.send(200, "text/plain", String(getStatus()));
+  server.send(200, "text/plain", String(getState()));
 }
 
 void handleOpen() {
