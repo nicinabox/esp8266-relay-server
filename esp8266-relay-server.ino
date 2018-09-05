@@ -1,5 +1,6 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
+#include <ESP8266HTTPClient.h>
 
 #include "secrets.h"
 
@@ -12,7 +13,10 @@
 const char* ssid = WIFI_SSID;
 const char* password = WIFI_PASSWORD;
 
+volatile int gateState = LOW;
+
 ESP8266WebServer server(80);
+HTTPClient http;
 
 void setRelayState(int nextState) {
   digitalWrite(ESP8266_GPIO4, nextState);
@@ -74,6 +78,36 @@ void configureRoutes() {
   server.onNotFound(handleNotFound);
 }
 
+long lastStateCheck = 0;
+
+void checkState() {
+  unsigned long currentStateCheck = millis();
+
+  if (currentStateCheck - lastStateCheck > 1000) {
+    lastStateCheck = currentStateCheck;
+
+    int currentGateState = getState();
+    bool didStateChange = gateState != currentGateState;
+
+    if (didStateChange) {
+      gateState = currentGateState;
+      onStateChange(bool(currentGateState));
+    }
+  }
+}
+
+void onStateChange(bool value) {
+  String body = "{ \
+    \"service\": \"switch-service\", \
+    \"characteristic\": \"On\", \
+    \"value\": " + String(value) + "}";
+
+  http.begin(NOTIFICATION_URL);
+  http.addHeader("Content-Type", "application/json");
+  http.POST(body);
+  http.end();
+}
+
 void awaitWifiConnected() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
@@ -91,7 +125,7 @@ void setupHardware() {
   pinMode(ESP8266_GPIO5, INPUT_PULLUP);
   pinMode(LED_PIN, OUTPUT);
 
-  digitalWrite(ESP8266_GPIO4, 0);
+  digitalWrite(ESP8266_GPIO4, gateState);
 }
 
 void setup() {
