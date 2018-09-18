@@ -1,6 +1,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
+#include "notifications.h"
 #include "secrets.h"
 
 // Esp8266 pinouts
@@ -105,4 +106,8 @@ void setup() {
 
 void loop() {
   server.handleClient();
+
+  if (strlen(NOTIFICATION_URL)) {
+    listenForStateChange(&getState);
+  }
 }
