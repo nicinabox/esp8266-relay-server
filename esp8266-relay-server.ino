@@ -4,29 +4,30 @@
 #include "notifications.h"
 #include "secrets.h"
 
-// Esp8266 pinouts
-#define ESP8266_GPIO2   2  // LED
-#define ESP8266_GPIO4   4  // Relay
-#define ESP8266_GPIO5   5  // Optocoupler input
-#define LED_PIN         ESP8266_GPIO2
+// SONOFF SV
+const int RELAY_PIN = 12;
+const int LED_PIN = 13;
+const int SENSOR_PIN = 5;
 
-const char* ssid = WIFI_SSID;
-const char* password = WIFI_PASSWORD;
+// GENERIC
+// const int RELAY_PIN = 4;
+// const int LED_PIN = 2;
+// const int SENSOR_PIN = 5;
 
 ESP8266WebServer server(80);
 
 void setRelayState(int nextState) {
-  digitalWrite(ESP8266_GPIO4, nextState);
+  digitalWrite(RELAY_PIN, nextState);
 }
 
 void cycleRelay() {
-  setRelayState(1);
+  setRelayState(HIGH);
   delay(100);
-  setRelayState(0);
+  setRelayState(LOW);
 }
 
 int getState() {
-  return digitalRead(ESP8266_GPIO5);
+  return digitalRead(SENSOR_PIN);
 }
 
 bool isClosed() {
@@ -76,36 +77,51 @@ void configureRoutes() {
 }
 
 void awaitWifiConnected() {
+  Serial.setDebugOutput(true);
+  Serial.println("Trying to connect " + String(WIFI_SSID));
+
   WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
+  wifi_station_disconnect();
+
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD, 9);
 
   while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.println("Waiting to connect...");
+    delay(1000);
+    Serial.println(".");
+  }
+}
+
+void watchInputState() {
+  if (isClosed()) {
+    digitalWrite(LED_PIN, LOW);
+  } else {
+    digitalWrite(LED_PIN, HIGH);
   }
 }
 
 void setupHardware() {
-  Serial.begin(9600);
-
-  pinMode(ESP8266_GPIO4, OUTPUT);
-  pinMode(ESP8266_GPIO5, INPUT_PULLUP);
   pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);
 
-  digitalWrite(ESP8266_GPIO4, 0);
+  pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, LOW);
+
+  pinMode(SENSOR_PIN, INPUT_PULLUP);
 }
 
 void setup() {
+  Serial.begin(9600);
+
   awaitWifiConnected();
   setupHardware();
   configureRoutes();
 
   server.begin();
-  Serial.println("Listening on http://" + String(WiFi.localIP()));
 }
 
 void loop() {
   server.handleClient();
+  watchInputState();
 
   if (strlen(NOTIFICATION_URL)) {
     listenForStateChange(&getState);
