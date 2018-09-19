@@ -9,11 +9,6 @@ const int RELAY_PIN = 12;
 const int LED_PIN = 13;
 const int SENSOR_PIN = 5;
 
-// GENERIC
-// const int RELAY_PIN = 4;
-// const int LED_PIN = 2;
-// const int SENSOR_PIN = 5;
-
 ESP8266WebServer server(80);
 
 void setRelayState(int nextState) {
@@ -38,8 +33,12 @@ bool isOpen() {
   return getState() == HIGH;
 }
 
+void sendStatus(int status) {
+  server.send(200, "text/plain", String(status));
+}
+
 void handleStatus() {
-  server.send(200, "text/plain", String(getState()));
+  sendStatus(getState());
 }
 
 void handleOpen() {
@@ -47,7 +46,7 @@ void handleOpen() {
     cycleRelay();
   }
 
-  server.send(204);
+  handleStatus();
 }
 
 void handleClose() {
@@ -55,13 +54,12 @@ void handleClose() {
     cycleRelay();
   }
 
-  server.send(204);
+  handleStatus();
 }
 
 void handleCycle() {
   cycleRelay();
-
-  server.send(204);
+  handleStatus();
 }
 
 void handleNotFound() {
@@ -91,12 +89,8 @@ void awaitWifiConnected() {
   }
 }
 
-void watchInputState() {
-  if (isClosed()) {
-    digitalWrite(LED_PIN, LOW);
-  } else {
-    digitalWrite(LED_PIN, HIGH);
-  }
+void setInputLED() {
+  digitalWrite(LED_PIN, getState());
 }
 
 void setupHardware() {
@@ -121,7 +115,7 @@ void setup() {
 
 void loop() {
   server.handleClient();
-  watchInputState();
+  setInputLED();
 
   if (strlen(NOTIFICATION_URL)) {
     listenForStateChange(&getState);
