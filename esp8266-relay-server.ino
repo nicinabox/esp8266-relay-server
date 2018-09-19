@@ -21,16 +21,24 @@ void cycleRelay() {
   setRelayState(LOW);
 }
 
-int getState() {
+int getSensorState() {
   return digitalRead(SENSOR_PIN);
 }
 
+int getGateState() {
+  return 1 - getSensorState();
+}
+
+int setLEDState() {
+  digitalWrite(LED_PIN, getSensorState());
+}
+
 bool isClosed() {
-  return getState() == LOW;
+  return getGateState() == HIGH;
 }
 
 bool isOpen() {
-  return getState() == HIGH;
+  return getGateState() == LOW;
 }
 
 void sendStatus(int status) {
@@ -38,7 +46,7 @@ void sendStatus(int status) {
 }
 
 void handleStatus() {
-  sendStatus(getState());
+  sendStatus(getGateState());
 }
 
 void handleOpen() {
@@ -89,13 +97,9 @@ void awaitWifiConnected() {
   }
 }
 
-void setInputLED() {
-  digitalWrite(LED_PIN, getState());
-}
-
 void setupHardware() {
   pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, LOW);
+  setLEDState();
 
   pinMode(RELAY_PIN, OUTPUT);
   digitalWrite(RELAY_PIN, LOW);
@@ -115,9 +119,9 @@ void setup() {
 
 void loop() {
   server.handleClient();
-  setInputLED();
+  setLEDState();
 
   if (strlen(NOTIFICATION_URL)) {
-    listenForStateChange(&getState);
+    listenForStateChange(&getGateState);
   }
 }
