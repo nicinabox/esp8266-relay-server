@@ -1,7 +1,6 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
-#include "notifications.h"
 #include "secrets.h"
 
 // SONOFF SV
@@ -120,8 +119,4 @@ void setup() {
 void loop() {
   server.handleClient();
   setLEDState();
-
-  if (strlen(NOTIFICATION_URL)) {
-    listenForStateChange(&getGateState);
-  }
 }
