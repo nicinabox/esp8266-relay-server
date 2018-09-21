@@ -8,6 +8,9 @@ const int RELAY_PIN = 12;
 const int LED_PIN = 13;
 const int SENSOR_CLOSED_PIN = 5;
 
+const int GATE_OPEN = 0;
+const int GATE_CLOSED = 1;
+
 ESP8266WebServer server(80);
 
 void setRelayState(int nextState) {
@@ -26,20 +29,24 @@ int getSensorState() {
   return digitalRead(SENSOR_CLOSED_PIN);
 }
 
-int getGateState() {
+int getCurrentState() {
   return 1 - getSensorState();
+}
+
+int getTargetState() {
+  return getSensorState();
+}
+
+bool isClosed() {
+  return getCurrentState() == GATE_CLOSED;
+}
+
+bool isOpen() {
+  return getCurrentState() == GATE_OPEN;
 }
 
 int setLEDState() {
   digitalWrite(LED_PIN, getSensorState());
-}
-
-bool isClosed() {
-  return getGateState() == HIGH;
-}
-
-bool isOpen() {
-  return getGateState() == LOW;
 }
 
 void sendStatus(int status) {
@@ -47,28 +54,30 @@ void sendStatus(int status) {
 }
 
 void handleStatus() {
-  sendStatus(getGateState());
+  sendStatus(getCurrentState());
 }
 
 void handleOpen() {
   if (isClosed()) {
     cycleRelay();
+    sendStatus(getTargetState());
+  } else {
+    sendStatus(getCurrentState());
   }
-
-  handleStatus();
 }
 
 void handleClose() {
   if (isOpen()) {
     cycleRelay();
+    sendStatus(getTargetState());
+  } else {
+    sendStatus(getCurrentState());
   }
-
-  handleStatus();
 }
 
 void handleCycle() {
   cycleRelay();
-  handleStatus();
+  sendStatus(getTargetState());
 }
 
 void handleNotFound() {
