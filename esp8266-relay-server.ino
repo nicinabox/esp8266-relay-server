@@ -6,7 +6,7 @@
 // SONOFF SV
 const int RELAY_PIN = 12;
 const int LED_PIN = 13;
-const int SENSOR_PIN = 5;
+const int SENSOR_CLOSED_PIN = 5;
 
 ESP8266WebServer server(80);
 
@@ -21,7 +21,9 @@ void cycleRelay() {
 }
 
 int getSensorState() {
-  return digitalRead(SENSOR_PIN);
+  // 1 - switch open
+  // 0 - switch closed
+  return digitalRead(SENSOR_CLOSED_PIN);
 }
 
 int getGateState() {
@@ -103,7 +105,7 @@ void setupHardware() {
   pinMode(RELAY_PIN, OUTPUT);
   digitalWrite(RELAY_PIN, LOW);
 
-  pinMode(SENSOR_PIN, INPUT_PULLUP);
+  pinMode(SENSOR_CLOSED_PIN, INPUT_PULLUP);
 }
 
 void setup() {
