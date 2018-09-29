@@ -2,6 +2,9 @@
 #include <ESP8266WebServer.h>
 
 #include "secrets.h"
+#include "notifications.h"
+
+const String VERSION = "2";
 
 // SONOFF SV
 const int RELAY_PIN = 12;
@@ -49,43 +52,53 @@ int setLEDState() {
   digitalWrite(LED_PIN, getSensorState());
 }
 
-void sendStatus(int status) {
-  server.send(200, "text/plain", String(status));
+void reply(int status, String body = "") {
+  server.sendHeader("FirmwareVersion", VERSION);
+  server.send(status, "text/plain", body);
 }
 
-void handleStatus() {
-  sendStatus(getCurrentState());
+void sendState(int state) {
+  reply(200, String(state));
+}
+
+void handleHealth() {
+  reply(204);
+}
+
+void handleState() {
+  sendState(getCurrentState());
 }
 
 void handleOpen() {
   if (isClosed()) {
     cycleRelay();
-    sendStatus(getTargetState());
+    sendState(getTargetState());
   } else {
-    sendStatus(getCurrentState());
+    sendState(getCurrentState());
   }
 }
 
 void handleClose() {
   if (isOpen()) {
     cycleRelay();
-    sendStatus(getTargetState());
+    sendState(getTargetState());
   } else {
-    sendStatus(getCurrentState());
+    sendState(getCurrentState());
   }
 }
 
 void handleCycle() {
   cycleRelay();
-  sendStatus(getTargetState());
+  sendState(getTargetState());
 }
 
 void handleNotFound() {
-  server.send(404);
+  reply(404);
 }
 
 void configureRoutes() {
-  server.on("/", handleStatus);
+  server.on("/", handleHealth);
+  server.on("/state", handleState);
   server.on("/open", handleOpen);
   server.on("/close", handleClose);
   server.on("/cycle", handleCycle);
@@ -97,6 +110,7 @@ void awaitWifiConnected() {
   Serial.println("Trying to connect " + String(WIFI_SSID));
 
   WiFi.mode(WIFI_STA);
+  WiFi.hostname(HOSTNAME);
   wifi_station_disconnect();
 
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD, 9);
@@ -130,4 +144,8 @@ void setup() {
 void loop() {
   server.handleClient();
   setLEDState();
+
+  if (strlen(NOTIFICATION_URL)) {
+    listenForStateChange(&getCurrentState);
+  }
 }

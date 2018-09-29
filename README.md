@@ -9,30 +9,46 @@ A simple server to accept HTTP requests to control an automatic gate.
 
 ## API
 
+### Headers
+
+All responses include `FirmwareVersion`.
+
+### Endpoints
+
 `GET /`
 
-Return gate status. Body returns 0 or 1 for closed and open, respectively.
+Health check.
+
+    Status: 204
+    Body: 1
+
+`GET /state`
+
+Return gate state. Body returns 0 closed or 1 for open.
 
     Status: 200
-    => 1
+    Body: 1
 
 `GET /open`
 
 Open the gate. Noop if already open.
 
-    Status: 204
+    Status: 200
+    Body: 0
 
 `GET /close`
 
 Close the gate. Noop if already closed.
 
-    Status: 204
+    Status: 200
+    Body: 1
 
 `GET /cycle`
 
 Cycle the gate from the current position.
 
-    Status: 204
+    Status: 200
+    Body: 0
 
 ## License
 
