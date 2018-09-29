@@ -13,7 +13,7 @@ void onStateChange(int gateState) {
   // To be used with homebridge-http-notification-server
   // https://github.com/Supereg/homebridge-http-notification-server
   String body = "{ \
-    \"characteristic\": \"CurrentDoorState\", \
+    \"characteristic\": \"TargetDoorState\", \
     \"value\": " + String(bool(gateState)) + "}";
 
   http.begin(NOTIFICATION_URL);
