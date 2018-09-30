@@ -11,13 +11,16 @@ const int RELAY_PIN = 12;
 const int LED_PIN = 13;
 const int SENSOR_CLOSED_PIN = 5;
 
-const int GATE_OPEN = 0;
-const int GATE_CLOSED = 1;
+const int OPEN = 0;
+const int CLOSED = 1;
+const int OPENING = 2;
+const int CLOSING = 3;
+const int STOPPED = 4;
 
 ESP8266WebServer server(80);
 
-void setRelayState(int nextState) {
-  digitalWrite(RELAY_PIN, nextState);
+void setRelayState(int state) {
+  digitalWrite(RELAY_PIN, state);
 }
 
 void cycleRelay() {
@@ -37,15 +40,32 @@ int getCurrentState() {
 }
 
 int getTargetState() {
-  return getSensorState();
+  int state = getCurrentState()
+
+  switch(state) {
+    case CLOSED:
+      return OPENING;
+
+    case OPEN:
+      return CLOSING;
+
+    case CLOSING:
+      return CLOSED;
+
+    case OPENING:
+      return OPEN;
+
+    default:
+      return STOPPED;
+  }
 }
 
 bool isClosed() {
-  return getCurrentState() == GATE_CLOSED;
+  return getCurrentState() == CLOSED;
 }
 
 bool isOpen() {
-  return getCurrentState() == GATE_OPEN;
+  return getCurrentState() == OPEN;
 }
 
 int setLEDState() {
