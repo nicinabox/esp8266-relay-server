@@ -4,18 +4,18 @@
 #include "secrets.h"
 #include "notifications.h"
 
-const String VERSION = "2";
+const String VERSION = "3";
 
 // SONOFF SV
 const int RELAY_PIN = 12;
 const int LED_PIN = 13;
 const int SENSOR_CLOSED_PIN = 5;
 
-const int OPEN = 0;
-const int CLOSED = 1;
-const int OPENING = 2;
-const int CLOSING = 3;
-const int STOPPED = 4;
+const int DOOR_OPEN = 0;
+const int DOOR_CLOSED = 1;
+const int DOOR_OPENING = 2;
+const int DOOR_CLOSING = 3;
+const int DOOR_STOPPED = 4;
 
 ESP8266WebServer server(80);
 
@@ -40,32 +40,32 @@ int getCurrentState() {
 }
 
 int getTargetState() {
-  int state = getCurrentState()
+  int state = getCurrentState();
 
   switch(state) {
-    case CLOSED:
-      return OPENING;
+    case DOOR_CLOSED:
+      return DOOR_OPENING;
 
-    case OPEN:
-      return CLOSING;
+    case DOOR_OPEN:
+      return DOOR_CLOSING;
 
-    case CLOSING:
-      return CLOSED;
+    case DOOR_CLOSING:
+      return DOOR_CLOSED;
 
-    case OPENING:
-      return OPEN;
+    case DOOR_OPENING:
+      return DOOR_OPEN;
 
     default:
-      return STOPPED;
+      return DOOR_STOPPED;
   }
 }
 
 bool isClosed() {
-  return getCurrentState() == CLOSED;
+  return getCurrentState() == DOOR_CLOSED;
 }
 
 bool isOpen() {
-  return getCurrentState() == OPEN;
+  return getCurrentState() == DOOR_OPEN;
 }
 
 int setLEDState() {
