@@ -40,9 +40,9 @@ int getCurrentState() {
 }
 
 int getTargetState() {
-  int state = getCurrentState();
+  int currentState = getCurrentState();
 
-  switch(state) {
+  switch(currentState) {
     case DOOR_CLOSED:
       return DOOR_OPENING;
 
