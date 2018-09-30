@@ -5,16 +5,14 @@ HTTPClient http;
 
 int const INTERVAL = 1000;
 long lastStateCheck = 0;
-volatile int lastGateState = LOW;
+volatile int lastGateState = HIGH;
 
 void onStateChange(int gateState) {
-  lastGateState = gateState;
-
   // To be used with homebridge-http-notification-server
   // https://github.com/Supereg/homebridge-http-notification-server
   String body = "{ \
     \"characteristic\": \"TargetDoorState\", \
-    \"value\": " + String(bool(gateState)) + "}";
+    \"value\": " + String(gateState) + "}";
 
   http.begin(NOTIFICATION_URL);
   http.addHeader("Content-Type", "application/json");
@@ -34,6 +32,7 @@ void listenForStateChange(int (*getState)()) {
     int gateState = getState();
 
     if (didStateChange(gateState)) {
+      lastGateState = gateState;
       onStateChange(gateState);
     }
   }
